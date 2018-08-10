@@ -1,0 +1,21 @@
+image: node:latest
+
+pipelines:
+  default:
+  - step:
+      name: Test
+      caches:
+      - node
+      script:
+      - yarn run install:dependencies
+      - yarn run test:eslint
+      - yarn run test:flow
+      - yarn run test:server
+  #          - yarn run test:client
+  - step:
+      name: Build
+      caches:
+      - node
+      script:
+      - yarn run install:dependencies
+      - yarn run build:client
