@@ -8,6 +8,9 @@ const { ApolloServer } = require('apollo-server-express');
 
 const typeDefs = require('./graphql/type-defs');
 const resolvers = require('./graphql/resolvers');
+const StarWarsAPI = require('./db/star-wars-api');
+const CharactersAPI = require('./db/characters-api');
+const StarshipsAPI = require('./db/star-wars-api');
 
 const app = express();
 
@@ -26,7 +29,15 @@ app.use(sassMiddleware({
 
 app.use(express.static(path.join(__dirname, 'client', 'build')));
 
-const apolloServer = new ApolloServer({ typeDefs, resolvers });
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
+  dataSources: () => ({
+    starWarsAPI: new StarWarsAPI(),
+    charactersAPI: new CharactersAPI(),
+    starshipsAPI: new StarshipsAPI(),
+  }),
+});
 
 apolloServer.applyMiddleware({ app });
 

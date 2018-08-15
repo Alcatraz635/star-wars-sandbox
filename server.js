@@ -10,7 +10,7 @@ const { app, apolloServer } = require('./app');
 const PORT = process.env.PORT || 4000;
 const HOST = process.env.HOST || 'localhost';
 
-if (cluster.isMaster) {
+if (cluster.isMaster && process.env === 'production') {
   for (let i = 0; i < numCPUs; i += 1) {
     const worker = cluster.fork();
     worker.on('listening', ({ port }) => console.log(`worker ${worker.process.pid} listening on http://${HOST}:${port}`));
