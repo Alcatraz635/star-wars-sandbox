@@ -53,7 +53,7 @@ module.exports = class StarWarsAPI extends RESTDataSource {
     const formattedSuggestions = await results.map(suggestion => suggestion.mass
       ? formatCharacter(suggestion)
       : formatStarship(suggestion));
-    const suggestionsWithFilms = await Promise.all(formattedSuggestions.map(async suggestion => {
+    await Promise.all(formattedSuggestions.forEach(async suggestion => {
       const suggestionFilms = await Promise.all(suggestion.films.map(async film => {
         const episodeNumber = film.split('/')[film.split('/').length - 2];
         const { title } = await this.getFilms(episodeNumber);
