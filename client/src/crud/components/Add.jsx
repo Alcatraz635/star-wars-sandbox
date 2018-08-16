@@ -123,17 +123,21 @@ export default class Add extends PureComponent<{}, State> {
   };
 
   handleChangeValue = async (client: Object, input: String) => {
-    await this.setState({ suggestions: [this.renderIsPending()] });
-    const { data } = await client.query({
-      query: SUGGEST_CHARACTERS,
-      variables: { input },
-    });
-    if (data) {
-      const { characters } = data;
-      const suggestions = await this.renderSuggestions(client, characters);
-      await this.setState({ suggestions });
-    } else {
-      await this.setState({ suggestions: [] });
+    try {
+      await this.setState({ suggestions: [this.renderIsPending()] });
+      const { data } = await client.query({
+        query: SUGGEST_CHARACTERS,
+        variables: { input },
+      });
+      if (data) {
+        const { characters } = data;
+        const suggestions = await this.renderSuggestions(client, characters);
+        await this.setState({ suggestions });
+      } else {
+        await this.setState({ suggestions: [] });
+      }
+    } catch (err) {
+      toast(err.message);
     }
   };
 

@@ -8,6 +8,15 @@ module.exports = class StarWarsAPI extends RESTDataSource {
   constructor() {
     super();
     this.baseURL = 'https://swapi.co/api/';
+    this.films = {
+      1: 'The Phantom Menace',
+      2: 'Attack of the Clones',
+      3: 'Revenge of the Sith',
+      4: 'A New Hope',
+      5: 'The Empire Strikes Back',
+      6: 'Return of the Jedi',
+      7: 'The Force Awakens',
+    }
   }
 
   willSendRequest(request) {
@@ -53,15 +62,14 @@ module.exports = class StarWarsAPI extends RESTDataSource {
     const formattedSuggestions = await results.map(suggestion => suggestion.mass
       ? formatCharacter(suggestion)
       : formatStarship(suggestion));
-    await Promise.all(formattedSuggestions.forEach(async suggestion => {
-      const suggestionFilms = await Promise.all(suggestion.films.map(async film => {
+    await formattedSuggestions.forEach(suggestion => {
+      const suggestionFilms = suggestion.films.map(film => {
         const episodeNumber = film.split('/')[film.split('/').length - 2];
-        const { title } = await this.getFilms(episodeNumber);
-        return title;
-      }));
+        return this.films[episodeNumber];
+      });
       suggestion.films = suggestionFilms;
       return suggestion;
-    }));
+    });
     const images = await Promise
       .all(formattedSuggestions.map(result => bingImageSearch(result.name)));
     await images.forEach((image, index) => {
@@ -69,6 +77,7 @@ module.exports = class StarWarsAPI extends RESTDataSource {
         formattedSuggestions[index].image = image.thumbnailUrl;
       }
     });
+    console.log(formattedSuggestions);
     return formattedSuggestions;
   }
 };
